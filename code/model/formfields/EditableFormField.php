@@ -384,7 +384,7 @@ class EditableFormField extends DataObject {
 	 * Implement custom field Configuration on this field. Includes such things as
 	 * settings and options of a given editable form field
 	 *
-	 * @return FieldSet
+	 * @return Fieldlist
 	 */
 	public function getFieldConfiguration() {
 		$extraClass = ($this->getSetting('ExtraClass')) ? $this->getSetting('ExtraClass') : '';
@@ -428,7 +428,7 @@ class EditableFormField extends DataObject {
 	 * Append custom validation fields to the default 'Validation'
 	 * section in the editable options view
 	 *
-	 * @return FieldSet
+	 * @return FieldList
 	 */
 	public function getFieldValidationOptions() {
 		$fields = new FieldList(

@@ -301,4 +301,69 @@ class EditableFormFieldTest extends FunctionalTest {
 //		$configuration = $text->getFieldConfiguration();
 
 	}
+
+    function testExtendedEditableFormField() {
+        /** @var ExtendedEditableFormField $field */
+        $field = $this->objFromFixture('ExtendedEditableFormField', 'extended-field');
+
+        // Check db fields
+        $dbFields = $field->stat('db');
+        $this->assertTrue(array_key_exists($dbFields, 'TestExtraField'));
+        $this->assertTrue(array_key_exists($dbFields, 'TestValidationField'));
+
+        // Check Field Configuration
+        $fieldConfiguration = $field->getFieldConfiguration();
+        $extraField = $fieldConfiguration->dataFieldByName($field->getSettingName('TestExtraField'));
+        $this->assertNotNull($extraField);
+
+        // Check Validation Fields
+        $fieldValidation = $field->getFieldValidationOptions();
+        $validationField = $fieldValidation->dataFieldByName($field->getSettingName('TestValidationField'));
+        $this->assertNotNull($extraField);
+    }
+
+}
+
+/**
+ * Class ExtendedEditableFormField
+ * A base EditableFormFieldClass that will be extended with {@link EditableFormFieldExtension}
+ * @mixin EditableFormFieldExtension
+ */
+class ExtendedEditableFormField extends EditableFormField implements TestOnly {
+    private static $extensions = array(
+        'EditableFormFieldExtension'
+    );
+}
+
+/**
+ * Class EditableFormFieldExtension
+ * Used for testing extensions to EditableFormField and the extended Fields methods
+ * @property EditableFormField owner
+ */
+class EditableFormFieldExtension extends DataExtension implements TestOnly
+{
+    private static $db = array(
+        'TestExtraField' => 'Varchar',
+        'TestValidationField' => 'Boolean'
+    );
+
+    public function updateFieldConfiguration(FieldList $fields)
+    {
+        $extraField = 'TestExtraField';
+        $fields->push(TextField::create(
+            $this->owner->getSettingName($extraField),
+            'Test extra field',
+            $this->owner->getSetting($extraField)
+        ));
+    }
+
+    public function updateFieldValidationOptions(FieldList $fields)
+    {
+        $extraField = 'TestValidationField';
+        $fields->push(CheckboxField::create(
+            $this->owner->getSettingName($extraField),
+            'Test validation field',
+            $this->owner->getSetting($extraField)
+        ));
+    }
 }
