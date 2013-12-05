@@ -7,6 +7,11 @@
 class EditableFormFieldTest extends FunctionalTest {
 	
 	static $fixture_file = 'userforms/tests/UserDefinedFormTest.yml';
+
+    protected $extraDataObjects = array(
+        'ExtendedEditableFormField',
+        'EditableFormFieldExtension'
+    );
 	
 	function testFormFieldPermissions() {
 		$text = $this->objFromFixture('EditableTextField', 'basic-text');
@@ -308,8 +313,8 @@ class EditableFormFieldTest extends FunctionalTest {
 
         // Check db fields
         $dbFields = $field->stat('db');
-        $this->assertTrue(array_key_exists($dbFields, 'TestExtraField'));
-        $this->assertTrue(array_key_exists($dbFields, 'TestValidationField'));
+        $this->assertTrue(array_key_exists('TestExtraField', $dbFields));
+        $this->assertTrue(array_key_exists('TestValidationField', $dbFields));
 
         // Check Field Configuration
         $fieldConfiguration = $field->getFieldConfiguration();
@@ -319,7 +324,7 @@ class EditableFormFieldTest extends FunctionalTest {
         // Check Validation Fields
         $fieldValidation = $field->getFieldValidationOptions();
         $validationField = $fieldValidation->dataFieldByName($field->getSettingName('TestValidationField'));
-        $this->assertNotNull($extraField);
+        $this->assertNotNull($validationField);
     }
 
 }
@@ -329,7 +334,8 @@ class EditableFormFieldTest extends FunctionalTest {
  * A base EditableFormFieldClass that will be extended with {@link EditableFormFieldExtension}
  * @mixin EditableFormFieldExtension
  */
-class ExtendedEditableFormField extends EditableFormField implements TestOnly {
+class ExtendedEditableFormField extends EditableFormField implements TestOnly
+{
     private static $extensions = array(
         'EditableFormFieldExtension'
     );
@@ -343,7 +349,7 @@ class ExtendedEditableFormField extends EditableFormField implements TestOnly {
 class EditableFormFieldExtension extends DataExtension implements TestOnly
 {
     private static $db = array(
-        'TestExtraField' => 'Varchar',
+        'TestExtraField'      => 'Varchar',
         'TestValidationField' => 'Boolean'
     );
 
